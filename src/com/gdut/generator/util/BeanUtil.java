@@ -1,6 +1,8 @@
 package com.gdut.generator.util;
 
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:kobe524348@gmail.com">黄钰朝</a>
@@ -50,5 +52,21 @@ public class BeanUtil {
         } else {
             return time / 1000 + "s";
         }
+    }
+
+    /**
+     * 字符串匹配
+     * @param REGEX 需要查找字符串
+     * @param INPUT 被查找的字符串
+     * @return num 查找到的数量
+     */
+    public static int searchStr(String REGEX, String INPUT){
+        int num = 0;
+        Pattern p = Pattern.compile(REGEX);
+        Matcher m = p.matcher(INPUT);
+        while(m.find()){
+            num++;
+        }
+        return num;
     }
 }
