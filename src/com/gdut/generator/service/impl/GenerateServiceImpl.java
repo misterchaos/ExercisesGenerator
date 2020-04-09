@@ -51,26 +51,33 @@ public class GenerateServiceImpl implements GenerateService {
 
         //如果为整数
         if(numerator % denominator == 0) return String.valueOf(numerator/denominator);
-        //如果为假分数
-         else{
-             //则转换成带分数
+        //如果为分数
+        else{
+            //如果为假分数，则转换成带分数
             int l;
+            //化为带分数之后新的分子
+            int newNumerator;
             if(numerator > denominator){
-                l = (numerator - (numerator%denominator))/numerator;
-                numerator %= denominator;
-
                 //约分
                 int maxCommonDivisor = CalculateUtil.getMaxCommonDivisor(numerator, denominator);//获取最大公约数
-                numerator /= maxCommonDivisor;
-                denominator /= maxCommonDivisor;
-                return l+ "'" +numerator+"/"+denominator;
+                if(maxCommonDivisor != 1){
+                    numerator /= maxCommonDivisor;
+                    denominator /= maxCommonDivisor;
+                }
+                //计算新分子和带数
+                newNumerator = numerator % denominator;
+                l = (numerator - newNumerator) / denominator;
+
+                return l+ "'" +newNumerator+"/"+denominator;
             }
-            //如果为非假分数
+            //如果为真分数，则不做处理，直接约分
             else {
                 //约分
                 int maxCommonDivisor = CalculateUtil.getMaxCommonDivisor(numerator, denominator);//获取最大公约数
-                numerator /= maxCommonDivisor;
-                denominator /= maxCommonDivisor;
+                if (maxCommonDivisor != 1) {
+                    numerator /= maxCommonDivisor;
+                    denominator /= maxCommonDivisor;
+                }
                 return numerator+"/"+denominator;
             }
         }
@@ -98,7 +105,7 @@ public class GenerateServiceImpl implements GenerateService {
         ArrayList<String> eValueList= e.getValueList();
 
         //将所有运算数进队列
-        for(int i=2*e.getSignalNum(); i>e.getSignalNum(); i--){
+        for(int i=2*e.getSignalNum(); i>e.getSignalNum()-1; i--){
             queue.add(eValueList.get(i));
         }
 
@@ -111,7 +118,7 @@ public class GenerateServiceImpl implements GenerateService {
             String num_2 = queue.remove();
 
             //计算两数运算后结果
-            String answer = Objects.requireNonNull(OperatorEnum.getEnumByOpSymbol(opSymbol)).op(num_1, num_2);
+            String answer = OperatorEnum.getEnumByOpSymbol(opSymbol).op(num_1, num_2);
             queue.add(answer);
         }
 

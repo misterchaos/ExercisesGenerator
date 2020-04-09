@@ -36,18 +36,19 @@ public enum OperatorEnum implements OperationService {
         }
     };
 
+    //field
     private final String opSymbol; //运算符标志
     private final int opValue;     //运算符对应索引
     private final int priority;    //运算符优先级，数字小则优先级高
 
+    //constructor
     private OperatorEnum(String opSymbol, int opValue, int priority) {
         this.opSymbol = opSymbol;
         this.opValue = opValue;
         this.priority = priority;
     }
 
-
-
+    //methods
     public String getOpSymbol(){ return opSymbol; }
     public int getOpValue(){ return opValue; }
     public int getPriority(){ return priority; }

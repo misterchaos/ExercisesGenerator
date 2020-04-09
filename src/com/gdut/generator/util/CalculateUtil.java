@@ -3,13 +3,22 @@ package com.gdut.generator.util;
 import com.gdut.generator.model.Exercises;
 
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 用于处理计算
  */
 public class CalculateUtil {
+    //用于测试增加的mian方法
+    public static void main(String[] args){
+         String s = getImproperFraction("1'1/2");
+         System.out.println(s);
+         int n = getNumerator("1'1/2");
+         System.out.println(n);
+         int d = getDenominator("1'1/2");
+         System.out.println(d);
+         String[] str = switchToCommonDenominator("1'1/2", "2/3");
+         System.out.println(str[0]+"\n"+str[1]);
+    }
 
     /**
      * 将带分数数化成假分数形式,如过传入的不是带分数，则不做改动，原数返回
@@ -35,18 +44,21 @@ public class CalculateUtil {
      */
     public static int getNumerator(String num) {
         int numerator;
-        String[] str = null;
-
+        String[] str;
+        //如果是带分数,则获取的是转换为假分数之后的分子
         if (BeanUtil.searchStr("'", num) > 0) {
             str = num.split("['/]");
             numerator = Integer.parseInt(str[0]) * Integer.parseInt(str[2]) + Integer.parseInt(str[1]);
             return numerator;
-        } else if (BeanUtil.searchStr("/", num) > 0) {
+        }
+        //如果是真分数/假分数
+        else if (BeanUtil.searchStr("/", num) > 0) {
             str = num.split("/");
             numerator = Integer.parseInt(str[0]);
             return numerator;
         }
-        return 1;
+        //如果是整数，则原数返回
+        return Integer.parseInt(num);
     }
 
     /**
@@ -56,17 +68,21 @@ public class CalculateUtil {
      */
     public static int getDenominator(String num) {
         int denominator;
-        String[] str = null;
+        String[] str;
 
+        //如果是带分数
         if(BeanUtil.searchStr("'", num) > 0) {//如果传入的是带分数
             str = num.split("['/]");
             denominator = Integer.parseInt(str[2]);
             return denominator;
-        }else if(BeanUtil.searchStr("/", num) > 0){//如果传入的是分数
+        }
+        //如果是真分数/假分数
+        else if(BeanUtil.searchStr("/", num) > 0){//如果传入的是分数
             str = num.split("/");
             denominator = Integer.parseInt(str[1]);
             return denominator;
         }
+        //如果是整数
         return 1;
     }
 
@@ -84,13 +100,17 @@ public class CalculateUtil {
         int numerator_2;
         //如果a为分数
         if(BeanUtil.searchStr("/", num_1) > 0){
-            num_1 = getImproperFraction(num_1); //则a转换为假分数
+            //如果a为带分数，则转换为假分数
+            if(BeanUtil.searchStr("'", num_1) > 0) num_1 = getImproperFraction(num_1);
 
-            if(BeanUtil.searchStr("/", num_2) > 0){             //如果a、b为分数
-                num_2 = getImproperFraction(num_2); //则b转换为假分数
+            //如果a、b为分数
+            if(BeanUtil.searchStr("/", num_2) > 0){
+                //如果b为带分数，则转换为假分数
+                if(BeanUtil.searchStr("'", num_2) > 0) num_2 = getImproperFraction(num_2);
                 //获取分母
                 denominator_1 = getDenominator(num_1);
                 denominator_2 = getDenominator(num_2);
+                //如果a、b分母相同则不做处理
                 if(denominator_1==denominator_2){
                     str[0] = num_1;
                     str[1] = num_2;
@@ -99,22 +119,25 @@ public class CalculateUtil {
                 //获取分子
                 numerator_1 = getNumerator(num_1);
                 numerator_2 = getNumerator(num_2);
+                //通分处理
                 str[0] = numerator_1*denominator_2 +"/"+ denominator_1*denominator_2;
                 str[1] = numerator_2*denominator_1 +"/"+ denominator_1*denominator_2;
                 return str;
-
-            }else{                                                      //a为分数，b为整数
+            }
+            //a为分数，b为整数
+            else{
                 num_1 = getImproperFraction(num_1);
                 denominator_1 = getDenominator(num_1);
                 num_2 = Integer.parseInt(num_2)*denominator_1 +"/"+ Integer.parseInt(num_2)*denominator_1;
                 str[0] = num_1;
                 str[1] = num_2;
-                return str;
             }
+            return str;
         }
         //如果a为整数
         else{
-            if(BeanUtil.searchStr("/", num_2) > 0){             //如果a为整数，b为分数
+            //如果a为整数，b为分数
+            if(BeanUtil.searchStr("/", num_2) > 0){
                 num_2 = getImproperFraction(num_2);
                 denominator_2 = getDenominator(num_2);
                 num_1 = Integer.parseInt(num_1)*denominator_2 +"/"+ Integer.parseInt(num_1)*denominator_2;
@@ -122,7 +145,8 @@ public class CalculateUtil {
                 str[1] = num_2;
                 return str;
             }
-            else {                                                     //如果a、b都为整数
+            //如果a、b都为整数
+            else {
                 str[0] = num_1;
                 str[1] = num_2;
                 return str;
@@ -166,7 +190,6 @@ public class CalculateUtil {
      */
     public static int getRandomNum(int min, int max){
         Random random = new Random();
-        int randomNum = random.nextInt(max)%(max-min+1) + min;
-        return randomNum;
+        return random.nextInt(max)%(max-min+1) + min;
     }
 }

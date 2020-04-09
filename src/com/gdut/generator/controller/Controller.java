@@ -22,7 +22,8 @@ public class Controller {
         Exercises e = new Exercises();
         GenerateServiceImpl giml = new GenerateServiceImpl();
         giml.generateExercises(e, 10);
-        System.out.println(e);
+        e = giml.generateAnswer(e);
+        System.out.println(e.getValueList()+"\n"+e.getAnswer());
     }
 
 
