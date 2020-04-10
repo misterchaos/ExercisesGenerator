@@ -16,7 +16,7 @@ public class Main extends Application {
         //导入css
         scene.getStylesheets().add(getClass().getResource("./view/css/style.css").toString());
 
-        primaryStage.setTitle("generator-一个神奇的计算器");
+        primaryStage.setTitle("generator-一个四则运算题目生成器");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();

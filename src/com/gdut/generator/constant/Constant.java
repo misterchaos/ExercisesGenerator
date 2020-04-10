@@ -8,7 +8,6 @@ package com.gdut.generator.constant;
 public class Constant {
 
 
-
     /***********************************************************
      *                  命令行参数常量
      ***********************************************************/
@@ -30,5 +29,21 @@ public class Constant {
      */
     public static final String OPS_A = "-a";
 
+    /**
+     * 乘号
+     */
+    public static final String PLUS = "+";
+    /**
+     * 减号
+     */
+    public static final String MINUS = "-";
+    /**
+     * 乘号
+     */
+    public static final String MULTIPLY = "×";
+    /**
+     * 除号
+     */
+    public static final String DIVIDE = "÷";
 
 }

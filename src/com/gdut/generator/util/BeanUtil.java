@@ -69,4 +69,16 @@ public class BeanUtil {
         }
         return num;
     }
+
+    /**
+     * 返回查找的字符串（第一个）
+     * @param REGEX 需要查找字符串
+     * @param INPUT 被查找的字符串
+     */
+    public static String getStr(String REGEX, String INPUT){
+        Pattern p = Pattern.compile(REGEX);
+        Matcher m = p.matcher(INPUT);
+        m.find();
+        return m.group();
+    }
 }

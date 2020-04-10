@@ -1,5 +1,6 @@
 package com.gdut.generator.service.impl;
 
+import com.gdut.generator.constant.Constant;
 import com.gdut.generator.service.OperationService;
 import com.gdut.generator.util.CalculateUtil;
 
@@ -13,7 +14,7 @@ public enum OperatorEnum implements OperationService {
     /**
      * 加法
      */
-    ADD("+", 0, 2) {
+    ADD(Constant.PLUS, 0, 2) {
         @Override
         public String op(String num1, String num2) {
             //通分
@@ -24,7 +25,7 @@ public enum OperatorEnum implements OperationService {
             return CalculateUtil.reduction(numerator, denominator);
         }
     },
-    MINUS("-", 1, 2) {
+    MINUS(Constant.MINUS, 1, 2) {
         @Override
         public String op(String num1, String num2) {
             //通分
@@ -40,7 +41,7 @@ public enum OperatorEnum implements OperationService {
             }
         }
     },
-    MULTIPLY("×", 2, 1) {
+    MULTIPLY(Constant.MULTIPLY, 2, 1) {
         @Override
         public String op(String num1, String num2) {
 
@@ -54,7 +55,7 @@ public enum OperatorEnum implements OperationService {
             return result;
         }
     },
-    DIVIDE("÷", 3, 1) {
+    DIVIDE(Constant.DIVIDE, 3, 1) {
         @Override
         public String op(String num1, String num2) {
             //获取分母分子

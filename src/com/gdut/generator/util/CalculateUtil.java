@@ -1,5 +1,11 @@
 package com.gdut.generator.util;
 
+import com.gdut.generator.constant.Constant;
+import com.gdut.generator.model.Exercises;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 
 /**
@@ -174,7 +180,7 @@ public class CalculateUtil {
                 numerator %= denominator;
             } else if (numerator < denominator) {
                 denominator %= numerator;
-            } else if ( numerator == denominator){
+            } else if (numerator == denominator) {
                 return numerator;
             }
         }
@@ -201,7 +207,7 @@ public class CalculateUtil {
      * @return
      */
     public static String reduction(int numerator, int denominator) {
-        if(numerator*denominator==0){
+        if (numerator * denominator == 0) {
             return String.valueOf(0);
         }
         int maxCommonDivisor = getMaxCommonDivisor(numerator, denominator);
@@ -228,4 +234,125 @@ public class CalculateUtil {
         int numerator = CalculateUtil.getNumerator(number);
         return numerator < denominator;
     }
+
+    /**
+     * 从一个(e1+e2)形式的字符串中解析出 e1 + e2
+     * e1和e2可以是子表达式
+     *
+     * @param expression
+     * @return
+     */
+    public static String[] getOperatorAndNumber(String expression) {
+        //去除最外层括号
+        expression = expression.replaceFirst("\\(", "").substring(0, expression.lastIndexOf(")") - 1);
+        String num1 = null;
+        String num2 = null;
+        String operator = "(\\" + Constant.PLUS + "|\\" + Constant.MINUS + "|\\" + Constant.MULTIPLY + "|\\" + Constant.DIVIDE + ")";
+        //三运算符表达式
+        int operatorNum = BeanUtil.searchStr(operator, expression);
+        String reg;
+        if (operatorNum == 3) {
+            reg = "\\)" + operator + "\\(";
+        }
+        //两运算符表达式
+        else if (operatorNum == 2) {
+            reg = operator + "\\(";
+        }
+        //单运算符表达式
+        else {
+            reg = operator;
+        }
+        num1 = expression.split(reg)[0];
+        num2 = expression.split(reg)[1];
+        if(isExpression(num1)){
+            num1=num1+")";
+        }
+        if(isExpression(num2)){
+            num2="("+num2;
+        }
+        //必须先移除num2,因为num2可以是表达式，num1可能是num2的一部分
+        String op = expression.substring(num1.length(),num1.length()+1);
+        return new String[]{num1, op, num2};
+    }
+
+
+    /**
+     * 是否是表达式
+     *
+     * @return
+     */
+    public static boolean isExpression(String str) {
+        //如果有括号就是表达式
+        return str.contains("(") || str.contains(")");
+    }
+
+
+    /**
+     * 将字符串解析成Exercises对象
+     *
+     * @param question
+     */
+    public static Exercises parseExercises(String question) {
+        Exercises exercises = new Exercises();
+        //将题目解析成Excecises对象的属性
+        parseQuestion(exercises, question);
+        //解析题目中的题号
+        parseNumber(exercises, question);
+        return exercises;
+    }
+
+    /**
+     * 返回不带题号的答案
+     * @param answer
+     * @return
+     */
+    public static String parseAnswer(String answer){
+        return answer.split("\\.")[1];
+    }
+
+    /**
+     * 将题目解析成Excecises对象的属性
+     *
+     * @param question
+     * @return
+     */
+    private static void parseQuestion(Exercises exercises, String question) {
+        String expression = question.split("\\.")[1].replace("\\=", "");
+        Queue<String> queue = new LinkedList();
+        ArrayList<String> valueList = new ArrayList<>();
+        queue.add(expression);
+        while (true) {
+            expression = queue.remove();
+            //如果是运算符则继续解析
+            if (CalculateUtil.isExpression(expression)) {
+                String[] operatorAndNumber = CalculateUtil.getOperatorAndNumber(expression);
+                //保存运算符
+                valueList.add(operatorAndNumber[1]);
+                //将操作时或者子表达式入队
+                queue.add(operatorAndNumber[2]);
+                queue.add(operatorAndNumber[0]);
+            }
+            //如果是数字，则结束
+            else {
+                //还没加入操作数时valuelist的大小时运算符个数
+                exercises.setOperatorNumber(valueList.size());
+                //第一个元素已经被remove所以单独add
+                valueList.add(expression);
+                valueList.addAll(queue);
+                exercises.setValueList(valueList);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 解析题目中的题号
+     *
+     * @param exercises
+     * @param question
+     */
+    private static void parseNumber(Exercises exercises, String question) {
+        exercises.setNumber(Integer.parseInt(question.split("\\.")[0]));
+    }
+
 }

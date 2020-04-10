@@ -1,7 +1,11 @@
 package com.gdut.generator.controller;
 
 import com.gdut.generator.model.Exercises;
+import com.gdut.generator.model.Result;
 import com.gdut.generator.service.impl.GenerateServiceImpl;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * @author <a href="mailto:kobe524348@gmail.com">黄钰朝</a>
@@ -10,20 +14,27 @@ import com.gdut.generator.service.impl.GenerateServiceImpl;
  */
 public class Controller {
 
-    public static void main(String args[]){
-        /*
-        GenerateServiceImpl generateService = new GenerateServiceImpl();
-        for(int i=0;i<10;i++){
-            String e = generateService.generateNum(10);
-            System.out.println(e);
-        }
-    }
-    */
-        Exercises e = new Exercises();
+    public static void main(String args[]) {
         GenerateServiceImpl giml = new GenerateServiceImpl();
-        giml.generateExercises(e, 10);
-        e = giml.generateAnswer(e);
-        System.out.println(e.getValueList()+"\n"+e.getAnswer());
+        try {
+            List<Exercises> exercisesList = giml.generateExercises(10000, 2);
+            for (int i = 0; i < exercisesList.size(); i++) {
+                System.out.println(exercisesList.get(i).getValueList() + "   ======   " + exercisesList.get(i).getFormatQuestion() + exercisesList.get(i).getAnswer());
+            }
+            File file1 = new File(System.getProperty("user.dir") + "/Exercises.txt");
+            File file2 = new File(System.getProperty("user.dir") + "/Answer.txt");
+            exercisesList = giml.readFile(file1, file2);
+            Result result = giml.checkAnswer(exercisesList);
+            System.out.println("================================================");
+            for (int i = 0; i < exercisesList.size(); i++) {
+                System.out.println(exercisesList.get(i).getValueList() + "   ======   " + exercisesList.get(i).getSimplestFormatQuestion()
+                         + " 学生答案：" + exercisesList.get(i).getStudentAnswer());
+            }
+            System.out.printf("result:" + result.toString());
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
     }
 
 

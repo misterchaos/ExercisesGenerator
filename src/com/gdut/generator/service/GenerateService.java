@@ -1,7 +1,10 @@
 package com.gdut.generator.service;
 
 import com.gdut.generator.model.Exercises;
+import com.gdut.generator.model.Result;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -11,10 +14,15 @@ import java.util.List;
  */
 public interface GenerateService {
     //生成题目
-    List<Exercises> generateExercises(int exercisesNum,int numRange);
+    List<Exercises> generateExercises(int exercisesNum, int numRange) throws IOException;
+
     //生成答案
     void generateAnswer(Exercises e);
 
+    //批卷
+    Result checkAnswer(List<Exercises> exercises);
 
+    //读取题目和答案文件
+    List<Exercises> readFile(File exercisesFile, File answerFile) throws Exception;
 
 }

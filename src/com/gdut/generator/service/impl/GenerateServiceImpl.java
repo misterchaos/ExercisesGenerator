@@ -1,9 +1,12 @@
 package com.gdut.generator.service.impl;
 
 import com.gdut.generator.model.Exercises;
+import com.gdut.generator.model.Result;
 import com.gdut.generator.service.GenerateService;
 import com.gdut.generator.util.CalculateUtil;
+import com.gdut.generator.util.FileUtil;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -22,20 +25,36 @@ public class GenerateServiceImpl implements GenerateService {
      * @return
      */
     @Override
-    public List<Exercises> generateExercises(int exercisesNum, int numRange) {
+    public List<Exercises> generateExercises(int exercisesNum, int numRange) throws IOException {
+        BufferedWriter exercisesWriter = new BufferedWriter(new FileWriter(new File(System.getProperty("user.dir") + "/Exercises.txt")));
+        BufferedWriter answerWriter = new BufferedWriter(new FileWriter(new File(System.getProperty("user.dir") + "/Answer.txt")));
         List<Exercises> exercisesList = new LinkedList<>();
-        while (exercisesList.size() < exercisesNum) {
-            Exercises exercises = generateQuestion(numRange);
-            generateAnswer(exercises);
-            //有效题目加入List
-            if (validate(exercises, exercisesList)) {
-                //设置题号
-                exercises.setNumber(exercisesList.size() + 1);
-                //生成可以输出的题目样式
-                formatQuestion(exercises);
-                System.out.println("e:"+exercises.getQuestion());
-                exercisesList.add(exercises);
+        try {
+
+            while (exercisesList.size() < exercisesNum) {
+                Exercises exercises = generateQuestion(numRange);
+                generateAnswer(exercises);
+                //有效题目加入List
+                if (validate(exercises, exercisesList)) {
+                    //设置题号
+                    exercises.setNumber(exercisesList.size() + 1);
+                    //生成可以输出的题目样式
+                    exercisesList.add(exercises);
+                    //输出到文件
+                    exercisesWriter.write(exercises.getFormatQuestion());
+                    answerWriter.write(exercises.getFormatAnswer());
+                    exercisesWriter.newLine();
+                    answerWriter.newLine();
+                }
             }
+            //写入文件
+            exercisesWriter.flush();
+            answerWriter.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            exercisesWriter.close();
+            answerWriter.close();
         }
         return exercisesList;
     }
@@ -44,7 +63,6 @@ public class GenerateServiceImpl implements GenerateService {
      * 检查题目是否有效：是否重复，数值合理
      *
      * @param exercises
-     * @param exercisesList
      * @return
      */
     private boolean validate(Exercises exercises, List<Exercises> exercisesList) {
@@ -52,44 +70,17 @@ public class GenerateServiceImpl implements GenerateService {
         if (exercises.getAnswer() == null) {
             return false;
         }
+        //题目重复
+        if (exercisesList.contains(exercises)) {
+            System.out.println("题目重复");
+            return false;
+        }
         return true;
     }
 
 
     /**
-     * 生成可以输出的题目样式
-     *
-     * @param e
-     */
-    private void formatQuestion(Exercises e) {
-        String bracket = "(e)";
-        ArrayList<String> eValueList = e.getValueList();
-        Queue<String> queue = new LinkedList<>();
-        //将所有运算数进队列
-        for (int i = 2 * e.getOperatorNumber(); i > e.getOperatorNumber() - 1; i--) {
-            queue.add(eValueList.get(i));
-        }
-
-        //取出每个运算符,再从队列取出两个数字进行运算，结果再放入队尾中，直到取完所有运算符，此时队列中的数字为最终答案
-        for (int i = e.getOperatorNumber() - 1; i >= 0; i--) {
-            String operator = eValueList.get(i);
-            //从队列取出两个数字
-            String e1 = queue.remove();
-            String e2 = queue.remove();
-            //添加一层括号
-            String expression = bracket.replace("e", e1 + operator + e2);
-            queue.add(expression);
-        }
-
-        StringBuilder stringBuilder = new StringBuilder("").append(e.getNumber()).append(".").append(queue.remove()).append("=");
-        e.setQuestion(stringBuilder.toString());
-    }
-
-
-
-    /**
      * 生成答案
-     *
      */
     @Override
     public void generateAnswer(Exercises e) {
@@ -108,7 +99,6 @@ public class GenerateServiceImpl implements GenerateService {
             //从队列取出两个数字
             String num1 = queue.remove();
             String num2 = queue.remove();
-
             //计算两数运算后结果
             String answer = OperatorEnum.getEnumByOpSymbol(opSymbol).op(num1, num2);
 
@@ -120,6 +110,45 @@ public class GenerateServiceImpl implements GenerateService {
             queue.add(answer);
         }
         e.setAnswer(queue.remove());
+    }
+
+    @Override
+    public Result checkAnswer(List<Exercises> exercises) {
+        Result result = new Result();
+        for (Exercises e : exercises) {
+            generateAnswer(e);
+            if (e.getAnswer().equalsIgnoreCase(e.getStudentAnswer())) {
+                result.getCorrectList().add(e.getNumber());
+            } else {
+                result.getWrongList().add(e.getNumber());
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 读取文件并转成题目对象
+     *
+     * @param exercisesFile
+     * @param answerFile
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<Exercises> readFile(File exercisesFile, File answerFile) throws Exception {
+        BufferedReader exercisesReader = FileUtil.getBufferedReader(exercisesFile);
+        BufferedReader answerReader = FileUtil.getBufferedReader(answerFile);
+        String question;
+        List<Exercises> exercisesList = new LinkedList<>();
+        while ((question = exercisesReader.readLine()) != null) {
+            String answer = answerReader.readLine();
+            //解析成Exercises对象
+            Exercises exercises = CalculateUtil.parseExercises(question);
+            //填入学生答案
+            exercises.setStudentAnswer(CalculateUtil.parseAnswer(answer));
+            exercisesList.add(exercises);
+        }
+        return exercisesList;
     }
 
 
@@ -169,6 +198,10 @@ public class GenerateServiceImpl implements GenerateService {
      * @return
      */
     private String generateNum(int numRange) {
+        //最小范围是2
+        if (numRange < 2) {
+            throw new RuntimeException("最小的范围是2以内的自然数");
+        }
         Random random = new Random();
         //分子
         int numerator = 0;
@@ -176,17 +209,10 @@ public class GenerateServiceImpl implements GenerateService {
         int denominator = 0;
 
 
-        //如果分母/分子为0则重新生成
-        while (denominator == 0 || numerator == 0) {
-            if (denominator == 0) {
-                denominator = random.nextInt(numRange);
-            }
-            if (numerator == 0) {
-                numerator = random.nextInt(numRange);
-            }
-            //TODO 测试
-            numerator = denominator * numerator;
-
+        //如果分母为0则重新生成
+        while (denominator == 0 || (numerator / (float) denominator) > numRange) {
+            denominator = random.nextInt(10);
+            numerator = random.nextInt(10);
         }
 
         //如果为整数
