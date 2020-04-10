@@ -23,11 +23,13 @@ public class GenerateServiceImpl implements GenerateService {
         int signalNum = CalculateUtil.getRandomNum(1,3);
         e.setSignalNum(signalNum);
         for (int i=0; i<e.getSignalNum(); i++){
-            e.addValue(i,generateOperator()); //添加运算符
+            //添加运算符
+            e.addValue(i,generateOperator());
 
         }
         for(int i=e.getSignalNum(); i<2*e.getSignalNum()+1; i++){
-            e.addValue(i, generateNum(numRange)); //添加运算数
+            //添加运算数
+            e.addValue(i, generateNum(numRange));
         }
         return e;
     }
@@ -40,17 +42,25 @@ public class GenerateServiceImpl implements GenerateService {
     @Override
     public String generateNum(int numRange) {
         Random random = new Random();
-        int numerator = random.nextInt(numRange); //分子
-        int denominator = random.nextInt(numRange); //分母
+        //分子
+        int numerator = random.nextInt(numRange);
+        //分母
+        int denominator = random.nextInt(numRange);
 
         //如果分母/分子为0则重新生成
         while (denominator==0 || numerator==0){
-            if(denominator==0) denominator = random.nextInt(numRange);
-            if(numerator==0) numerator = random.nextInt(numRange);
+            if(denominator==0) {
+                denominator = random.nextInt(numRange);
+            }
+            if(numerator==0) {
+                numerator = random.nextInt(numRange);
+            }
         }
 
         //如果为整数
-        if(numerator % denominator == 0) return String.valueOf(numerator/denominator);
+        if(numerator % denominator == 0) {
+            return String.valueOf(numerator/denominator);
+        }
         //如果为分数
         else{
             //如果为假分数，则转换成带分数
@@ -59,7 +69,8 @@ public class GenerateServiceImpl implements GenerateService {
             int newNumerator;
             if(numerator > denominator){
                 //约分
-                int maxCommonDivisor = CalculateUtil.getMaxCommonDivisor(numerator, denominator);//获取最大公约数
+                //获取最大公约数
+                int maxCommonDivisor = CalculateUtil.getMaxCommonDivisor(numerator, denominator);
                 if(maxCommonDivisor != 1){
                     numerator /= maxCommonDivisor;
                     denominator /= maxCommonDivisor;
@@ -73,7 +84,8 @@ public class GenerateServiceImpl implements GenerateService {
             //如果为真分数，则不做处理，直接约分
             else {
                 //约分
-                int maxCommonDivisor = CalculateUtil.getMaxCommonDivisor(numerator, denominator);//获取最大公约数
+                //获取最大公约数
+                int maxCommonDivisor = CalculateUtil.getMaxCommonDivisor(numerator, denominator);
                 if (maxCommonDivisor != 1) {
                     numerator /= maxCommonDivisor;
                     denominator /= maxCommonDivisor;
@@ -90,9 +102,14 @@ public class GenerateServiceImpl implements GenerateService {
     @Override
     public String generateOperator() {
         Random random = new Random();
-        int opNum = random.nextInt(4);//随机生成操作符索引
+        //随机生成操作符索引
+        int opNum = random.nextInt(4);
         OperatorEnum operatorEnum = OperatorEnum.getEnumByOpValue(opNum);
-        return operatorEnum.getOpSymbol();
+        if (operatorEnum != null) {
+            return operatorEnum.getOpSymbol();
+        }else {
+            throw new RuntimeException("不存在下表标对应的运算符");
+        }
     }
 
     /**
@@ -114,11 +131,11 @@ public class GenerateServiceImpl implements GenerateService {
             String opSymbol = eValueList.get(i);
 
             //从队列取出两个数字
-            String num_1 = queue.remove();
-            String num_2 = queue.remove();
+            String num1 = queue.remove();
+            String num2 = queue.remove();
 
             //计算两数运算后结果
-            String answer = OperatorEnum.getEnumByOpSymbol(opSymbol).op(num_1, num_2);
+            String answer = OperatorEnum.getEnumByOpSymbol(opSymbol).op(num1, num2);
             queue.add(answer);
         }
 

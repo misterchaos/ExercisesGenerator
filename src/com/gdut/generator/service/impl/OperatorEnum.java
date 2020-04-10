@@ -9,7 +9,10 @@ import com.gdut.generator.service.OperationService;
 //op()方法没写完
 
 public enum OperatorEnum implements OperationService {
-    ADD("+",0,2){
+    /**
+     * 加法
+     */
+    ADD("+", 0, 2) {
         @Override
         public String op(String num_1, String num_2) {
             //将分数转换成假分数形式
@@ -17,31 +20,42 @@ public enum OperatorEnum implements OperationService {
             return null;
         }
     },
-    MINUS("-",1, 2) {
+    MINUS("-", 1, 2) {
         @Override
         public String op(String num_1, String num_2) {
             return null;
         }
     },
-    MULTIPLY("×",2, 1) {
+    MULTIPLY("×", 2, 1) {
         @Override
         public String op(String num_1, String num_2) {
             return null;
         }
     },
-    DIVIDE("÷",3, 1) {
+    DIVIDE("÷", 3, 1) {
         @Override
         public String op(String num_1, String num_2) {
             return null;
         }
     };
 
-    //field
-    private final String opSymbol; //运算符标志
-    private final int opValue;     //运算符对应索引
-    private final int priority;    //运算符优先级，数字小则优先级高
+    /**
+     * field
+     * 运算符标志
+     */
+    private final String opSymbol;
+    /**
+     * 运算符对应索引
+     */
+    private final int opValue;
+    /**
+     * 运算符优先级，数字小则优先级高
+     */
+    private final int priority;
 
-    //constructor
+    /**
+     * constructor
+     */
     private OperatorEnum(String opSymbol, int opValue, int priority) {
         this.opSymbol = opSymbol;
         this.opValue = opValue;
@@ -49,18 +63,27 @@ public enum OperatorEnum implements OperationService {
     }
 
     //methods
-    public String getOpSymbol(){ return opSymbol; }
-    public int getOpValue(){ return opValue; }
-    public int getPriority(){ return priority; }
+    public String getOpSymbol() {
+        return opSymbol;
+    }
+
+    public int getOpValue() {
+        return opValue;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
 
     /**
      * 通过索引获取枚举
+     *
      * @param opNum 操作符索引
      * @return OperatorEnum
      */
-    public static OperatorEnum getEnumByOpValue(int opNum){
-        for(OperatorEnum operatorEnum : OperatorEnum.values()){
-            if(operatorEnum.getOpValue() == opNum){
+    public static OperatorEnum getEnumByOpValue(int opNum) {
+        for (OperatorEnum operatorEnum : OperatorEnum.values()) {
+            if (operatorEnum.getOpValue() == opNum) {
                 return operatorEnum;
             }
         }
@@ -69,12 +92,13 @@ public enum OperatorEnum implements OperationService {
 
     /**
      * 通过运算符标志获取枚举
+     *
      * @param opSymbol 运算符标志
      * @return OperatorEnum
      */
     public static OperatorEnum getEnumByOpSymbol(String opSymbol) {
-        for(OperatorEnum operatorEnum : OperatorEnum.values()){
-            if(operatorEnum.getOpSymbol().equals(opSymbol)){
+        for (OperatorEnum operatorEnum : OperatorEnum.values()) {
+            if (operatorEnum.getOpSymbol().equals(opSymbol)) {
                 return operatorEnum;
             }
         }
