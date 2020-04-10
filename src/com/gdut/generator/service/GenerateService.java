@@ -20,7 +20,7 @@ public interface GenerateService {
     void generateAnswer(Exercises e);
 
     //批卷
-    Result checkAnswer(List<Exercises> exercises);
+    Result checkAnswer(List<Exercises> exercises) throws IOException;
 
     //读取题目和答案文件
     List<Exercises> readFile(File exercisesFile, File answerFile) throws Exception;

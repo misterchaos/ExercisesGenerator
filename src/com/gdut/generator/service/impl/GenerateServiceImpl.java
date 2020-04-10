@@ -113,7 +113,7 @@ public class GenerateServiceImpl implements GenerateService {
     }
 
     @Override
-    public Result checkAnswer(List<Exercises> exercises) {
+    public Result checkAnswer(List<Exercises> exercises) throws IOException {
         Result result = new Result();
         for (Exercises e : exercises) {
             generateAnswer(e);
@@ -123,6 +123,38 @@ public class GenerateServiceImpl implements GenerateService {
                 result.getWrongList().add(e.getNumber());
             }
         }
+        BufferedWriter resultWriter = new BufferedWriter(new FileWriter(new File(System.getProperty("user.dir") + "/Grade.txt")));
+        List correctList = result.getCorrectList();
+        resultWriter.write("Correct:"+correctList.size());
+        resultWriter.newLine();
+        StringBuilder stringBuilder = new StringBuilder("(");
+        for (int i = 0; i < correctList.size(); i++) {
+            if ((i>1&&(i+1)%10==0)||i==correctList.size()-1) {
+                //写完一行
+                stringBuilder.append(correctList.get(i)).append(")");
+                resultWriter.write(stringBuilder.toString());
+                resultWriter.newLine();
+                stringBuilder = new StringBuilder("(");
+            } else {
+                stringBuilder.append(correctList.get(i)).append(",");
+            }
+        }
+        List wrongList = result.getWrongList();
+        resultWriter.write("Wrong:"+wrongList.size());
+        resultWriter.newLine();
+        stringBuilder = new StringBuilder("(");
+        for (int i = 0; i < wrongList.size(); i++) {
+            if ((i>1&&(i+1)%10==0)||i==wrongList.size()-1) {
+                //写完一行
+                stringBuilder.append(wrongList.get(i)).append(")");
+                resultWriter.write(stringBuilder.toString());
+                resultWriter.newLine();
+                stringBuilder = new StringBuilder("(");
+            } else {
+                stringBuilder.append(wrongList.get(i)).append(",");
+            }
+        }
+        resultWriter.flush();
         return result;
     }
 
