@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="767.0" prefWidth="862.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gdut.generator.controller.CheckController">
+   <children>
+      <Button layoutX="329.0" layoutY="111.0" mnemonicParsing="false" onAction="#checkPaper" text="批卷" />
+      <Label fx:id="runTimeLabel" layoutX="58.0" layoutY="733.0" text="运行耗时：无数据" />
+      <Button layoutX="706.0" layoutY="111.0" mnemonicParsing="false" onAction="#changeMode" text="切换模式⇋" />
+      <TableView fx:id="exercisesTableView" layoutX="58.0" layoutY="159.0" prefHeight="562.0" prefWidth="747.0">
+         <columns>
+            <TableColumn fx:id="question" prefWidth="427.0" text="题目" />
+            <TableColumn fx:id="studentAnswer" prefWidth="155.0" text="学生答案" />
+            <TableColumn fx:id="answer" prefWidth="164.0" text="正确答案" />
+         </columns>
+      </TableView>
+      <Label layoutX="58.0" layoutY="26.0" prefHeight="54.0" prefWidth="666.0" text="四则运算题目生成器 - 批卷模式">
+         <font>
+            <Font size="42.0" />
+         </font>
+      </Label>
+      <Button fx:id="selectExercisesFile" layoutX="58.0" layoutY="111.0" mnemonicParsing="false" onAction="#selectExercisesFile" text="选择题目文件" />
+      <Label fx:id="correctLabel" layoutX="200.0" layoutY="733.0" text="正确题数：无数据" />
+      <Label fx:id="wrongLabel" layoutX="340.0" layoutY="733.0" text="错误题数：无数据" />
+      <Button fx:id="selectAnswerFile" layoutX="191.0" layoutY="111.0" mnemonicParsing="false" onAction="#selectAnswerFile" text="选择答案文件" />
+   </children>
+</Pane>

@@ -1,8 +1,31 @@
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.GridPane?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<GridPane fx:controller="com.gdut.generator.controller.Controller"
-          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
-</GridPane>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="767.0" prefWidth="862.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gdut.generator.controller.GenerateController">
+   <children>
+      <TableView fx:id="exercisesTableView" layoutX="58.0" layoutY="159.0" prefHeight="562.0" prefWidth="747.0">
+        <columns>
+          <TableColumn fx:id="question" prefWidth="458.0" text="题目" />
+          <TableColumn fx:id="answer" prefWidth="288.0" text="答案" />
+        </columns>
+      </TableView>
+      <TextField fx:id="exercisesNumberTextField" layoutX="139.0" layoutY="111.0" prefHeight="30.0" prefWidth="94.0" />
+      <TextField fx:id="numberRangeTextField" layoutX="332.0" layoutY="111.0" prefHeight="30.0" prefWidth="101.0" />
+      <Label layoutX="67.0" layoutY="111.0" prefHeight="30.0" prefWidth="85.0" text="题目数量：" />
+      <Label layoutX="257.0" layoutY="116.0" text="数值范围：" />
+      <Button layoutX="458.0" layoutY="111.0" mnemonicParsing="false" onAction="#generate" text="出题" />
+       <Label fx:id="runTimeLabel" layoutX="58.0" layoutY="733.0" text="运行耗时：无数据" />
+       <Button layoutX="706.0" layoutY="111.0" mnemonicParsing="false" onAction="#changeMode" text="切换模式⇋" />
+      <Label layoutX="58.0" layoutY="26.0" prefHeight="54.0" prefWidth="666.0" text="四则运算题目生成器 - 出题模式">
+         <font>
+            <Font size="42.0" />
+         </font>
+      </Label>
+      <Label layoutX="163.0" layoutY="733.0" />
+      <Label layoutX="163.0" layoutY="733.0" prefHeight="15.0" prefWidth="562.0" />
+      <Label layoutX="226.0" layoutY="733.0" prefHeight="15.0" prefWidth="629.0" text="提示：生成的题目和答案分别输出到当前目录下的Exercises.txt和Answer.txt文件" />
+   </children>
+</Pane>

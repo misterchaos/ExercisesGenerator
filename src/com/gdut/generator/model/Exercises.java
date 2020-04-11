@@ -89,6 +89,8 @@ public class Exercises {
         this.studentAnswer.set(studentAnswer);
     }
 
+
+
     /**
      * 返回符合格式的题目
      *
@@ -153,6 +155,9 @@ public class Exercises {
     }
 
     public SimpleStringProperty formatQuestionProperty() {
+        if(null==formatQuestion.get()||formatQuestion.get().trim().isEmpty()){
+            getFormatQuestion();
+        }
         return formatQuestion;
     }
 

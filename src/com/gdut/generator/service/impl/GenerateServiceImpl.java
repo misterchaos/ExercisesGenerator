@@ -1,6 +1,7 @@
 package com.gdut.generator.service.impl;
 
-import com.gdut.generator.controller.Controller;
+import com.gdut.generator.controller.CheckController;
+import com.gdut.generator.controller.GenerateController;
 import com.gdut.generator.model.Exercises;
 import com.gdut.generator.model.Result;
 import com.gdut.generator.service.GenerateService;
@@ -43,7 +44,7 @@ public  class GenerateServiceImpl implements GenerateService {
                     continue;
                 }
                 //填充到表格中
-                Controller.EXERCISES_OBSERVABLE_LIST.add(exercises);
+                GenerateController.EXERCISES_OBSERVABLE_LIST.add(exercises);
                 //设置题号
                 count++;
                 exercises.setNumber(count);
@@ -146,6 +147,9 @@ public  class GenerateServiceImpl implements GenerateService {
         Result result = new Result();
         for (Exercises e : exercises) {
             generateAnswer(e);
+            //填入表格
+            System.out.println(e.formatQuestionProperty().getName());
+            CheckController.CHECK_EXERCISES_OBSERVABLE_LIST.add(e);
             if (e.getAnswer().equalsIgnoreCase(e.getStudentAnswer())) {
                 result.getCorrectList().add(e.getNumber());
             } else {
