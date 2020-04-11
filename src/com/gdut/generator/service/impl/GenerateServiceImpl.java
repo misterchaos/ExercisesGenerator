@@ -263,10 +263,7 @@ public  class GenerateServiceImpl implements GenerateService {
      * @return
      */
     private String generateNum(int numRange) {
-        //最小范围是2
-        if (numRange < 2) {
-            throw new RuntimeException("最小的范围是2以内的自然数");
-        }
+
         Random random = new Random();
         //分子
         int numerator = 0;

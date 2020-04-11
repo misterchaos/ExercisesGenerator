@@ -71,6 +71,10 @@ public class GenerateController {
                 JavaFxUtil.alert("请先输入题目数量和数值范围！");
                 return;
             }
+            //最小范围是2
+            if (numberRange < 2) {
+                throw new RuntimeException("最小的范围是2以内的自然数");
+            }
             //清空表格
             EXERCISES_OBSERVABLE_LIST.clear();
             start = System.currentTimeMillis();
@@ -100,7 +104,7 @@ public class GenerateController {
             numberRange = 0;
             numberRangeTextField.setText("");
             countDownLatch.await();
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             JavaFxUtil.alert(e.getMessage());
             e.printStackTrace();
         }
@@ -190,8 +194,9 @@ public class GenerateController {
                 generateService.generateExercises(exerciseNum, numRange);
                 countDownLatch.countDown();
                 System.out.println("线程" + workerNumber + "生成题目数：" + exerciseNum + " 耗时：" + BeanUtil.getRunTime(start));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
+
             }
 
         }
@@ -218,6 +223,7 @@ public class GenerateController {
                 System.out.println("生成题目总数：" + exerciseNum + "  总耗时：" + BeanUtil.getRunTime(start));
             } catch (IOException e) {
                 e.printStackTrace();
+
             }
         }
     }
