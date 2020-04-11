@@ -1,5 +1,6 @@
 package com.gdut.generator.service.impl;
 
+import com.gdut.generator.controller.Controller;
 import com.gdut.generator.model.Exercises;
 import com.gdut.generator.model.Result;
 import com.gdut.generator.service.GenerateService;
@@ -8,44 +9,50 @@ import com.gdut.generator.util.FileUtil;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author <a href="mailto:kobe524348@gmail.com">黄钰朝</a>
  * @description 用于生成四则运算题目
  * @date 2020-03-27 16:08
  */
-public class GenerateServiceImpl implements GenerateService {
+public  class GenerateServiceImpl implements GenerateService {
+
+    //并发队列，用来存放题目
+    private static Queue<Exercises> exercisesQueue = new ConcurrentLinkedQueue<>();
+    //并发集合，用来校验题目是否重复
+    private static Set<String> exercisesSet = new CopyOnWriteArraySet<>();
+    //并发锁，用于控制线程执行顺序
+    private static ReentrantLock reentrantLock = new ReentrantLock();
+    private static Condition isFull = reentrantLock.newCondition();
 
 
-    /**
-     * 生成指定数目包含答案的有效题目
-     *
-     * @param exercisesNum
-     * @param numRange
-     * @return
-     */
     @Override
-    public List<Exercises> generateExercises(int exercisesNum, int numRange) throws IOException {
+    public void writeToFile(int exercisesNum) throws IOException {
         BufferedWriter exercisesWriter = new BufferedWriter(new FileWriter(new File(System.getProperty("user.dir") + "/Exercises.txt")));
         BufferedWriter answerWriter = new BufferedWriter(new FileWriter(new File(System.getProperty("user.dir") + "/Answer.txt")));
-        List<Exercises> exercisesList = new LinkedList<>();
+        int count = 0;
         try {
 
-            while (exercisesList.size() < exercisesNum) {
-                Exercises exercises = generateQuestion(numRange);
-                generateAnswer(exercises);
-                //有效题目加入List
-                if (validate(exercises, exercisesList)) {
-                    //设置题号
-                    exercises.setNumber(exercisesList.size() + 1);
-                    //生成可以输出的题目样式
-                    exercisesList.add(exercises);
-                    //输出到文件
-                    exercisesWriter.write(exercises.getFormatQuestion());
-                    answerWriter.write(exercises.getFormatAnswer());
-                    exercisesWriter.newLine();
-                    answerWriter.newLine();
+            while (count < exercisesNum) {
+                Exercises exercises = exercisesQueue.peek();
+                if(exercises==null){
+                    continue;
                 }
+                //填充到表格中
+                Controller.EXERCISES_OBSERVABLE_LIST.add(exercises);
+                //设置题号
+                count++;
+                exercises.setNumber(count);
+                //输出到文件
+                exercisesWriter.write(exercises.getFormatQuestion());
+                answerWriter.write(exercises.getFormatAnswer());
+                exercisesWriter.newLine();
+                answerWriter.newLine();
+                exercisesQueue.remove();
             }
             //写入文件
             exercisesWriter.flush();
@@ -56,7 +63,31 @@ public class GenerateServiceImpl implements GenerateService {
             exercisesWriter.close();
             answerWriter.close();
         }
-        return exercisesList;
+    }
+
+    /**
+     * 生成指定数目包含答案的有效题目
+     *
+     * @param exercisesNum
+     * @param numRange
+     */
+    @Override
+    public void generateExercises(int exercisesNum, int numRange) throws IOException {
+        int count = 0;
+        while (count < exercisesNum) {
+            Exercises exercises = generateQuestion(numRange);
+            generateAnswer(exercises);
+            //有效题目加入List
+            if (validate(exercises, exercisesSet)) {
+                //生成可以输出的题目样式
+                exercisesQueue.add(exercises);
+                count++;
+                //放入集合
+                exercisesSet.add(exercises.getSimplestFormatQuestion());
+                exercisesSet.add(CalculateUtil.getEqualsExpression(exercises.getSimplestFormatQuestion()));
+            }
+        }
+
     }
 
     /**
@@ -65,14 +96,12 @@ public class GenerateServiceImpl implements GenerateService {
      * @param exercises
      * @return
      */
-    private boolean validate(Exercises exercises, List<Exercises> exercisesList) {
+    private boolean validate(Exercises exercises, Set<String> exercisesSet) {
         //如果计算结果为null说明计算过程出现负数或者假分数，不符合要求
         if (exercises.getAnswer() == null) {
             return false;
         }
-        //题目重复
-        if (exercisesList.contains(exercises)) {
-            System.out.println("题目重复");
+        if (exercisesSet.contains(exercises.getSimplestFormatQuestion())) {
             return false;
         }
         return true;
@@ -125,11 +154,11 @@ public class GenerateServiceImpl implements GenerateService {
         }
         BufferedWriter resultWriter = new BufferedWriter(new FileWriter(new File(System.getProperty("user.dir") + "/Grade.txt")));
         List correctList = result.getCorrectList();
-        resultWriter.write("Correct:"+correctList.size());
+        resultWriter.write("Correct:" + correctList.size());
         resultWriter.newLine();
         StringBuilder stringBuilder = new StringBuilder("(");
         for (int i = 0; i < correctList.size(); i++) {
-            if ((i>1&&(i+1)%10==0)||i==correctList.size()-1) {
+            if ((i > 1 && (i + 1) % 10 == 0) || i == correctList.size() - 1) {
                 //写完一行
                 stringBuilder.append(correctList.get(i)).append(")");
                 resultWriter.write(stringBuilder.toString());
@@ -140,11 +169,11 @@ public class GenerateServiceImpl implements GenerateService {
             }
         }
         List wrongList = result.getWrongList();
-        resultWriter.write("Wrong:"+wrongList.size());
+        resultWriter.write("Wrong:" + wrongList.size());
         resultWriter.newLine();
         stringBuilder = new StringBuilder("(");
         for (int i = 0; i < wrongList.size(); i++) {
-            if ((i>1&&(i+1)%10==0)||i==wrongList.size()-1) {
+            if ((i > 1 && (i + 1) % 10 == 0) || i == wrongList.size() - 1) {
                 //写完一行
                 stringBuilder.append(wrongList.get(i)).append(")");
                 resultWriter.write(stringBuilder.toString());

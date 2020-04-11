@@ -1,5 +1,7 @@
 package com.gdut.generator.model;
 
+import javafx.beans.property.SimpleIntegerProperty;
+
 import java.util.LinkedList;
 import java.util.List;
 

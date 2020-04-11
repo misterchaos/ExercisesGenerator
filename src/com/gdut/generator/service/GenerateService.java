@@ -14,7 +14,9 @@ import java.util.List;
  */
 public interface GenerateService {
     //生成题目
-    List<Exercises> generateExercises(int exercisesNum, int numRange) throws IOException;
+    void generateExercises(int exercisesNum, int numRange) throws IOException;
+    //输出到文件
+    void writeToFile(int exercisesNum) throws IOException;
 
     //生成答案
     void generateAnswer(Exercises e);

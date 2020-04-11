@@ -355,4 +355,14 @@ public class CalculateUtil {
         exercises.setNumber(Integer.parseInt(question.split("\\.")[0]));
     }
 
+    /**
+     * 返回等价的最简式
+     * @return
+     */
+    public static String getEqualsExpression(String expression){
+        String operator = "(\\" + Constant.PLUS + "|\\" + Constant.MINUS + "|\\" + Constant.MULTIPLY + "|\\" + Constant.DIVIDE + ")";
+        //操作数交换
+        return expression.split(operator)[1]+BeanUtil.getStr(operator,expression)+expression.split(operator)[0];
+    }
+
 }
