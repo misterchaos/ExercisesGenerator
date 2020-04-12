@@ -152,7 +152,7 @@ public class CalculateUtil {
             if (BeanUtil.searchStr("/", num2) > 0) {
                 num2 = getImproperFraction(num2);
                 denominator_2 = getDenominator(num2);
-                num1 = Integer.parseInt(num1) * denominator_2 + "/" + Integer.parseInt(num1) * denominator_2;
+                num1 = Integer.parseInt(num1) * denominator_2 + "/" + denominator_2;
                 str[0] = num1;
                 str[1] = num2;
                 return str;

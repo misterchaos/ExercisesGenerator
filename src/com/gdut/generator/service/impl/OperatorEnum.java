@@ -58,13 +58,18 @@ public enum OperatorEnum implements OperationService {
     DIVIDE(Constant.DIVIDE, 3, 1) {
         @Override
         public String op(String num1, String num2) {
+
             //获取分母分子
-            int denominator1 = CalculateUtil.getDenominator(num1);
-            int numerator1 = CalculateUtil.getNumerator(num1);
+            int denominator2 = CalculateUtil.getDenominator(num2);
+            int numerator2 = CalculateUtil.getNumerator(num2);
+            //被除数不为0
+            if(numerator2 ==0){
+                return null;
+            }
             //获取倒数
-            String reciprocal = denominator1 + "/" + numerator1;
+            String reciprocal = denominator2 + "/" + numerator2;
             //做乘法
-            String result = MULTIPLY.op(reciprocal, num2);
+            String result = MULTIPLY.op(num1, reciprocal);
             //如果不是真分数返回Null
             if (CalculateUtil.isProperFraction(reciprocal)) {
                 return result;

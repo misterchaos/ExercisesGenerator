@@ -151,13 +151,18 @@ public class GenerateServiceImpl implements GenerateService {
         e.setAnswer(queue.remove());
     }
 
+    /**
+     * 批卷
+     * @param exercises
+     * @return
+     * @throws IOException
+     */
     @Override
     public Result checkAnswer(List<Exercises> exercises) throws IOException {
         Result result = new Result();
         for (Exercises e : exercises) {
             generateAnswer(e);
             //填入表格
-            System.out.println(e.formatQuestionProperty().getName());
             CheckController.CHECK_EXERCISES_OBSERVABLE_LIST.add(e);
             if (e.getAnswer().equalsIgnoreCase(e.getStudentAnswer())) {
                 result.getCorrectList().add(e.getNumber());
@@ -165,6 +170,12 @@ public class GenerateServiceImpl implements GenerateService {
                 result.getWrongList().add(e.getNumber());
             }
         }
+        //将结果输出到文件
+        writeCheckResultToFile(result);
+        return result;
+    }
+
+    private static void writeCheckResultToFile(Result result) throws IOException {
         BufferedWriter resultWriter = new BufferedWriter(new FileWriter(new File(System.getProperty("user.dir") + "/Grade.txt")));
         List correctList = result.getCorrectList();
         resultWriter.write("Correct:" + correctList.size());
@@ -197,7 +208,6 @@ public class GenerateServiceImpl implements GenerateService {
             }
         }
         resultWriter.flush();
-        return result;
     }
 
     /**
@@ -244,7 +254,6 @@ public class GenerateServiceImpl implements GenerateService {
             //添加运算数
             e.addValue(i, generateNum(numRange));
         }
-
         return e;
     }
 
