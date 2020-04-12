@@ -104,6 +104,7 @@ public class GenerateController {
             numberRange = 0;
             numberRangeTextField.setText("");
             countDownLatch.await();
+            GenerateServiceImpl.clear();
         } catch (Exception e) {
             JavaFxUtil.alert(e.getMessage());
             e.printStackTrace();

@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @description 用于生成四则运算题目
  * @date 2020-03-27 16:08
  */
-public  class GenerateServiceImpl implements GenerateService {
+public class GenerateServiceImpl implements GenerateService {
 
     //并发队列，用来存放题目
     private static Queue<Exercises> exercisesQueue = new ConcurrentLinkedQueue<>();
@@ -31,6 +31,14 @@ public  class GenerateServiceImpl implements GenerateService {
     private static Condition isFull = reentrantLock.newCondition();
 
 
+    /**
+     * 清空容器
+     */
+    public static void clear() {
+        exercisesQueue.clear();
+        exercisesSet.clear();
+    }
+
     @Override
     public void writeToFile(int exercisesNum) throws IOException {
         BufferedWriter exercisesWriter = new BufferedWriter(new FileWriter(new File(System.getProperty("user.dir") + "/Exercises.txt")));
@@ -40,7 +48,7 @@ public  class GenerateServiceImpl implements GenerateService {
 
             while (count < exercisesNum) {
                 Exercises exercises = exercisesQueue.peek();
-                if(exercises==null){
+                if (exercises == null) {
                     continue;
                 }
                 //填充到表格中
@@ -61,6 +69,7 @@ public  class GenerateServiceImpl implements GenerateService {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            clear();
             exercisesWriter.close();
             answerWriter.close();
         }
